@@ -23,13 +23,18 @@ public class ProductService {
     }
 
     public void addProduct(String name, double price, String image, Long categoryId) {
-        Product product = new Product();
-        product.setName(name);
-        product.setPrice(price);
-        product.setImage(image);
-        Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new IllegalArgumentException("Category not found with id: " + categoryId));
-        product.setCategory(category);
-        productRepository.save(product);
+        try {
+            Product product = new Product();
+            product.setName(name);
+            product.setPrice(price);
+            product.setImage(image);
+            Category category = categoryRepository.findById(categoryId)
+                    .orElseThrow(() -> new IllegalArgumentException("Category not found with id: " + categoryId));
+            product.setCategory(category);
+            productRepository.save(product);
+        } catch (Exception e) {
+            throw new RuntimeException("Lỗi khi thêm sản phẩm : " + e.getMessage());
+        }
+
     }
 }
