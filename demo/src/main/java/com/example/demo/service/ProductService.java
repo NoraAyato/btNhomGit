@@ -62,4 +62,15 @@ public class ProductService {
             throw new RuntimeException("Lỗi khi cập nhật sản phẩm: " + e.getMessage());
         }
     }
+
+    public void deleteProduct(Long id) {
+        try {
+            productRepository.findById(id)
+                    .orElseThrow(() -> new IllegalArgumentException("Product not found with id: " + id));
+            productRepository.deleteById(id);
+        } catch (Exception e) {
+            throw new RuntimeException("Lỗi khi xóa sản phẩm: " + e.getMessage());
+        }
+
+    }
 }

@@ -105,4 +105,28 @@ public class ProductController {
         }
         return "redirect:/product";
     }
+
+    @GetMapping("/delete/{id}")
+    public String showDeleteProductForm(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            Product product = productService.getProductById(id)
+                    .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy sản phẩm với ID: " + id));
+            model.addAttribute("product", product);
+            return "product/delete-product";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Lỗi: " + e.getMessage());
+            return "redirect:/product";
+        }
+    }
+
+    @PostMapping("/delete/{id}")
+    public String deleteProduct(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            productService.deleteProduct(id);
+            redirectAttributes.addFlashAttribute("success", "Xóa sản phẩm thành công!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Lỗi khi xóa sản phẩm: " + e.getMessage());
+        }
+        return "redirect:/product";
+    }
 }
