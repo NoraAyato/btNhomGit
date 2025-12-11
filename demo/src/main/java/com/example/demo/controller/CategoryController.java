@@ -19,7 +19,7 @@ public class CategoryController {
 
     @GetMapping
     public List<Category> getAllCategories() {
-        System.out.println("Fetching all categories");
         return categoryService.getAllCategories();
     }
+
 }
