@@ -17,6 +17,7 @@ public class Product {
     private String name;
     private double price;
     private String image;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idCategory", nullable = false)
     @JsonBackReference
