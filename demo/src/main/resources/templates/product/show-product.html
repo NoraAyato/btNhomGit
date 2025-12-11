@@ -83,6 +83,7 @@
             <th>Tên sản phẩm</th>
             <th>Giá</th>
             <th>Hình ảnh</th>
+            <th>Hành động</th>
           </tr>
         </thead>
         <tbody>
@@ -99,6 +100,13 @@
               />
               <span th:unless="${product.image != null and product.image != ''}"
                 >Không có ảnh</span
+              >
+            </td>
+            <td>
+              <a
+                th:href="@{/product/edit/{id}(id=${product.id})}"
+                class="btn btn-sm btn-warning"
+                >Sửa</a
               >
             </td>
           </tr>

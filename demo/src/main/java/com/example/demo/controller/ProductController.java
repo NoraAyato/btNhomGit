@@ -11,6 +11,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.demo.config.ImageStorageConfig;
 import com.example.demo.utils.FileUploadUtil;
+
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -19,17 +22,11 @@ import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/product")
+@RequiredArgsConstructor
 public class ProductController {
-
     private final ProductService productService;
     private final CategoryService categoryService;
-    @Autowired
-    private ImageStorageConfig imageStorageConfig;
-
-    public ProductController(ProductService productService, CategoryService categoryService) {
-        this.productService = productService;
-        this.categoryService = categoryService;
-    }
+    private final ImageStorageConfig imageStorageConfig;
 
     @GetMapping
     public String show_Product(
@@ -71,6 +68,40 @@ public class ProductController {
             redirectAttributes.addFlashAttribute("success", "Thêm sản phẩm thành công!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Lỗi khi thêm sản phẩm: " + e.getMessage());
+        }
+        return "redirect:/product";
+    }
+
+    @GetMapping("/edit/{id}")
+    public String showEditProductForm(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            Product product = productService.getProductById(id)
+                    .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy sản phẩm với ID: " + id));
+            model.addAttribute("product", product);
+            model.addAttribute("categories", categoryService.getAllCategories());
+            return "product/edit-product";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Lỗi: " + e.getMessage());
+            return "redirect:/product";
+        }
+    }
+
+    @PostMapping("/edit/{id}")
+    public String editProduct(@PathVariable Long id,
+            @ModelAttribute Product product,
+            @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
+            @RequestParam("categoryId") Long categoryId,
+            RedirectAttributes redirectAttributes) {
+        try {
+            String fileName = product.getImage(); // Giữ ảnh cũ nếu không upload ảnh mới
+            if (imageFile != null && !imageFile.isEmpty()) {
+                fileName = imageFile.getOriginalFilename();
+                FileUploadUtil.saveFile(imageStorageConfig.getUploadDir(), fileName, imageFile);
+            }
+            productService.updateProduct(id, product.getName(), product.getPrice(), fileName, categoryId);
+            redirectAttributes.addFlashAttribute("success", "Cập nhật sản phẩm thành công!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Lỗi khi cập nhật sản phẩm: " + e.getMessage());
         }
         return "redirect:/product";
     }
