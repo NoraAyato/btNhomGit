@@ -35,6 +35,31 @@ public class ProductService {
         } catch (Exception e) {
             throw new RuntimeException("Lỗi khi thêm sản phẩm : " + e.getMessage());
         }
+    }
 
+    public void saveProduct(Product product) {
+        productRepository.save(product);
+    }
+
+    public Optional<Product> getProductById(Long id) {
+        return productRepository.findById(id);
+    }
+
+    public void updateProduct(Long id, String name, double price, String image, Long categoryId) {
+        try {
+            Product product = productRepository.findById(id)
+                    .orElseThrow(() -> new IllegalArgumentException("Product not found with id: " + id));
+            product.setName(name);
+            product.setPrice(price);
+            if (image != null && !image.isEmpty()) {
+                product.setImage(image);
+            }
+            Category category = categoryRepository.findById(categoryId)
+                    .orElseThrow(() -> new IllegalArgumentException("Category not found with id: " + categoryId));
+            product.setCategory(category);
+            productRepository.save(product);
+        } catch (Exception e) {
+            throw new RuntimeException("Lỗi khi cập nhật sản phẩm: " + e.getMessage());
+        }
     }
 }
