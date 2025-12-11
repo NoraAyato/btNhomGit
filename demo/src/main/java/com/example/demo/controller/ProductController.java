@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 public class ProductController {
     private final ProductService productService;
 
-
     public ProductController(ProductService productService) {
         this.productService = productService;
     }
@@ -26,17 +25,18 @@ public class ProductController {
     @GetMapping
     public String show_Product(
             @RequestParam(name = "keyword", required = false) String keyword,
-            @RequestParam(name = "minPrice",required = false) Double minPrice,
-            @RequestParam(name = "maxPrice",required = false) Double maxPrice,
-            Model model){
+            @RequestParam(name = "minPrice", required = false) Double minPrice,
+            @RequestParam(name = "maxPrice", required = false) Double maxPrice,
+            Model model) {
         List<Product> list_Product = productService.getAllProducts()
                 .stream()
-                .filter(p ->minPrice == null || p.getPrice() >= minPrice)
-                .filter(p ->maxPrice == null || p.getPrice() <= maxPrice).toList();
-        model.addAttribute("list_Product",list_Product);
-        model.addAttribute("keyword",keyword);
-        model.addAttribute("minPrice",minPrice);
-        model.addAttribute("maxPrice",maxPrice);
+                .filter(p -> keyword == null || p.getName().contains(keyword))
+                .filter(p -> minPrice == null || p.getPrice() >= minPrice)
+                .filter(p -> maxPrice == null || p.getPrice() <= maxPrice).toList();
+        model.addAttribute("list_Product", list_Product);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("minPrice", minPrice);
+        model.addAttribute("maxPrice", maxPrice);
         return "product/show-product";
     }
 }
